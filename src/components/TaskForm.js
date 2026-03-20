@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
-function TaskForm() {
+function TaskForm({ setAlerta }) {
   const [titulo, setTitulo] = useState("");
   const [data, setData] = useState("");
   const [materias, setMaterias] = useState([]);
@@ -13,12 +13,37 @@ function TaskForm() {
   }, []);
 
   const criar = () => {
+    if (!titulo) {
+      setAlerta({
+        tipo: "danger",
+        mensagem: "Título é obrigatório"
+      });
+      return;
+    }
+
     api.post("/tarefas", {
       titulo,
       descricao,
       data_entrega: data,
       materia_id: materiaId
     })
+      .then(() => {
+        setAlerta({
+          tipo: "success",
+          mensagem: "Tarefa criada com sucesso!"
+        });
+
+        setTitulo("");
+        setDescricao("");
+        setData("");
+        setMateriaId("");
+      })
+      .catch(() => {
+        setAlerta({
+          tipo: "danger",
+          mensagem: "Erro ao criar tarefa"
+        });
+      });
   };
 
   return (
@@ -29,27 +54,30 @@ function TaskForm() {
         <input
           className="form-control mb-2"
           placeholder="Título"
+          value={titulo}
           onChange={e => setTitulo(e.target.value)}
         />
 
         <input
           type="date"
           className="form-control mb-2"
+          value={data}
           onChange={e => setData(e.target.value)}
         />
 
         <textarea
           className="form-control mb-2"
           placeholder="Descrição"
+          value={descricao}
           onChange={e => setDescricao(e.target.value)}
         />
 
         <select
           className="form-control mb-2"
+          value={materiaId}
           onChange={e => setMateriaId(e.target.value)}
         >
-
-          <option>Selecione matéria</option>
+          <option value="">Selecione matéria</option>
           {materias.map(m => (
             <option key={m.id} value={m.id}>{m.nome}</option>
           ))}

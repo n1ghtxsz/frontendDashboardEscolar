@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
-function TaskList() {
+function TaskList({ setAlerta }) {
   const [tarefas, setTarefas] = useState([]);
   const [editando, setEditando] = useState(null);
+
   const formatarData = (data) => {
     if (!data) return "Sem data";
-
     const [ano, mes, dia] = data.split("-");
-
     return `${dia}/${mes}/${ano}`;
   };
 
@@ -23,7 +22,49 @@ function TaskList() {
   const toggle = (t) => {
     api.put(`/tarefas/${t.id}`, {
       concluida: !t.concluida
-    }).then(() => carregar());
+    })
+      .then(() => carregar())
+      .catch(() => {
+        setAlerta({
+          tipo: "danger",
+          mensagem: "Erro ao atualizar status"
+        });
+      });
+  };
+
+  const excluir = (id) => {
+    api.delete(`/tarefas/${id}`)
+      .then(() => {
+        setAlerta({
+          tipo: "success",
+          mensagem: "Tarefa excluída!"
+        });
+        carregar();
+      })
+      .catch(() => {
+        setAlerta({
+          tipo: "danger",
+          mensagem: "Erro ao excluir"
+        });
+      });
+  };
+
+  const salvarEdicao = () => {
+    api.put(`/tarefas/${editando.id}/editar`, editando)
+      .then(() => {
+        setAlerta({
+          tipo: "success",
+          mensagem: "Tarefa atualizada!"
+        });
+        setEditando(null);
+        carregar();
+      })
+      .catch(() => {
+        setAlerta({
+          tipo: "danger",
+          mensagem: "Erro ao atualizar"
+        });
+      });
   };
 
   return (
@@ -44,22 +85,22 @@ function TaskList() {
             >
               {t.concluida ? "Concluída" : "Pendente"}
             </button>
+
             <button
               className="btn btn-danger ms-2"
-              onClick={() => {
-                api.delete(`/tarefas/${t.id}`)
-                  .then(() => carregar());
-              }}
+              onClick={() => excluir(t.id)}
             >
               Excluir
             </button>
+
             <button
               className="btn btn-primary ms-2"
               onClick={() => setEditando(t)}
             >
               Editar
             </button>
-            {editando && (
+
+            {editando?.id === t.id && (
               <div className="card mt-3">
                 <div className="card-body">
                   <h5>Editando tarefa</h5>
@@ -91,13 +132,7 @@ function TaskList() {
 
                   <button
                     className="btn btn-success me-2"
-                    onClick={() => {
-                      api.put(`/tarefas/${editando.id}/editar`, editando)
-                        .then(() => {
-                          setEditando(null);
-                          carregar();
-                        });
-                    }}
+                    onClick={salvarEdicao}
                   >
                     Salvar
                   </button>
@@ -111,13 +146,12 @@ function TaskList() {
                 </div>
               </div>
             )}
+
           </div>
         </div>
       ))}
     </div>
-
   );
-
 }
 
 export default TaskList;
