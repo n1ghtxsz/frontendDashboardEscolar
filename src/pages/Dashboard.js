@@ -4,6 +4,7 @@ import TaskList from "../components/TaskList";
 import Alert from "../components/Alert";
 import SubjectManager from "../components/SubjectManager";
 import History from "../components/History";
+import '../styles/Alert.css'
 
 function Dashboard() {
   const [alerta, setAlerta] = useState({
