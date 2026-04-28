@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FaCalendar, FaTrash, FaPen } from "react-icons/fa";
 
 function TaskList({ tarefas, hoje, onToggle, onEdit, onDelete, formatarData }) {
   const [openBimestres, setOpenBimestres] = useState({});
@@ -124,7 +125,7 @@ function TaskList({ tarefas, hoje, onToggle, onEdit, onDelete, formatarData }) {
                             <span className="task-badge">{t.materias.nome}</span>
                           )}
                           <span className={`task-date ${status === "atrasada" ? "atrasada" : ""}`}>
-                            📅 {formatarData(t.data_entrega)}
+                            <FaCalendar /> {formatarData(t.data_entrega)}
                           </span>
                         </div>
                       </div>
@@ -135,14 +136,14 @@ function TaskList({ tarefas, hoje, onToggle, onEdit, onDelete, formatarData }) {
                           onClick={() => onEdit(t)}
                           title="Editar"
                         >
-                          ✏️
+                          <FaPen />
                         </button>
                         <button
                           className="task-action-btn delete"
                           onClick={() => onDelete(t.id)}
                           title="Excluir"
                         >
-                          🗑️
+                          <FaTrash />
                         </button>
                       </div>
                     </div>

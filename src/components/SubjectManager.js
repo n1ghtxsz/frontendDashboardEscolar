@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { FaBook, FaTrash } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 
 function SubjectManager({ onClose, materias, onAdd, onDelete }) {
   const [nome, setNome] = useState("");
@@ -15,7 +17,7 @@ function SubjectManager({ onClose, materias, onAdd, onDelete }) {
       <div className="modal-container" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Gerenciar Matérias</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}><IoClose /></button>
         </div>
 
         <div className="modal-body">
@@ -40,13 +42,13 @@ function SubjectManager({ onClose, materias, onAdd, onDelete }) {
             )}
             {materias.map(m => (
               <div key={m.id} className="subject-item">
-                <span className="subject-name">📘 {m.nome}</span>
+                <span className="subject-name"><FaBook /> {m.nome}</span>
                 <button
                   className="subject-delete-btn"
                   onClick={() => onDelete(m.id)}
                   title="Remover matéria"
                 >
-                  ✕
+                  <FaTrash />
                 </button>
               </div>
             ))}

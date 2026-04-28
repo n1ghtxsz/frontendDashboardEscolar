@@ -1,4 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
+import { FaCalendar, FaList, FaSearch, FaBook, FaHourglassEnd, FaCheckSquare } from "react-icons/fa";
+import { IoIosWarning } from "react-icons/io";
+import { IoAddCircle } from "react-icons/io5";
+import { MdSpaceDashboard } from "react-icons/md";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 import Alert from "../components/Alert";
@@ -146,9 +150,9 @@ function Dashboard() {
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">📚</div>
+          <div className="sidebar-logo-icon"><MdSpaceDashboard /></div>
           <div className="sidebar-logo-text">
-            Dashboard
+            UpsideTask
             <span>Escolar</span>
           </div>
         </div>
@@ -158,14 +162,14 @@ function Dashboard() {
             className={`sidebar-nav-item ${activeTab === "tarefas" ? "active" : ""}`}
             onClick={() => { setActiveTab("tarefas"); closeSidebar(); }}
           >
-            <span className="nav-icon">📋</span>
+            <span className="nav-icon"><FaList /></span>
             Tarefas
           </button>
           <button
             className={`sidebar-nav-item ${activeTab === "historico" ? "active" : ""}`}
             onClick={() => { setActiveTab("historico"); closeSidebar(); }}
           >
-            <span className="nav-icon">📅</span>
+            <span className="nav-icon"><FaCalendar /></span>
             Histórico por Bimestre
           </button>
         </nav>
@@ -179,13 +183,13 @@ function Dashboard() {
               closeSidebar();
             }}
           >
-            ＋ Nova Tarefa
+            <IoAddCircle /> Nova Tarefa
           </button>
           <button
             className="btn btn-secondary btn-block"
             onClick={() => { setShowSubjectManager(true); closeSidebar(); }}
           >
-            📘 Gerenciar Matérias
+            <FaBook /> Gerenciar Matérias
           </button>
         </div>
       </aside>
@@ -199,7 +203,7 @@ function Dashboard() {
           <h1>{pageTitle}</h1>
           {activeTab === "tarefas" && (
             <div className="search-box">
-              <span className="search-icon">🔍</span>
+              <span className="search-icon"><FaSearch /></span>
               <input
                 type="text"
                 placeholder="Buscar tarefas..."
@@ -216,22 +220,22 @@ function Dashboard() {
               {/* Stat Cards */}
               <div className="stat-cards">
                 <div className="stat-card total">
-                  <div className="stat-card-icon">📊</div>
+                  <div className="stat-card-icon"><MdSpaceDashboard fill="blue"/></div>
                   <div className="stat-card-label">Total</div>
                   <div className="stat-card-value">{stats.total}</div>
                 </div>
                 <div className="stat-card pendentes">
-                  <div className="stat-card-icon">⏳</div>
+                  <div className="stat-card-icon"><FaHourglassEnd fill="yellow"/></div>
                   <div className="stat-card-label">Pendentes</div>
                   <div className="stat-card-value">{stats.pendentes}</div>
                 </div>
                 <div className="stat-card concluidas">
-                  <div className="stat-card-icon">✅</div>
+                  <div className="stat-card-icon"><FaCheckSquare fill="lightgreen"/></div>
                   <div className="stat-card-label">Concluídas</div>
                   <div className="stat-card-value">{stats.concluidas}</div>
                 </div>
                 <div className="stat-card atrasadas">
-                  <div className="stat-card-icon">🔴</div>
+                  <div className="stat-card-icon"><IoIosWarning fill="red"/></div>
                   <div className="stat-card-label">Atrasadas</div>
                   <div className="stat-card-value">{stats.atrasadas}</div>
                 </div>

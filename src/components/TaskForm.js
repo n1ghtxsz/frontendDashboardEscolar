@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { IoClose } from "react-icons/io5";
 
 function TaskForm({ onClose, onSave, editingTask, materias }) {
   const [titulo, setTitulo] = useState("");
@@ -31,7 +32,7 @@ function TaskForm({ onClose, onSave, editingTask, materias }) {
       <div className="modal-container" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{editingTask ? "Editar Tarefa" : "Nova Tarefa"}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}><IoClose /></button>
         </div>
 
         <form onSubmit={handleSubmit}>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaCalendar } from "react-icons/fa";
 import api from "../services/api";
 
 function History({ formatarData }) {
@@ -73,7 +74,7 @@ function History({ formatarData }) {
   if (dados.length === 0) {
     return (
       <div className="task-list-empty">
-        <div className="empty-icon">📅</div>
+        <div className="empty-icon"><FaCalendar /></div>
         <p>Nenhuma tarefa no histórico</p>
       </div>
     );
@@ -117,7 +118,7 @@ function History({ formatarData }) {
                           <span className="task-badge">{t.materias.nome}</span>
                         )}
                         <span className="task-date">
-                          📅 {formatarData(t.data_entrega)}
+                          <FaCalendar /> {formatarData(t.data_entrega)}
                         </span>
                         <span className="task-badge" style={{
                           background: t.concluida ? "var(--success-bg)" : "var(--warning-bg)",
