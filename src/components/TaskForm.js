@@ -1,91 +1,96 @@
-import { useEffect, useState } from "react";
-import api from "../services/api";
+import { useState, useEffect } from "react";
 
-function TaskForm({ setAlerta }) {
+function TaskForm({ onClose, onSave, editingTask, materias }) {
   const [titulo, setTitulo] = useState("");
-  const [data, setData] = useState("");
-  const [materias, setMaterias] = useState([]);
-  const [materiaId, setMateriaId] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [data, setData] = useState("");
+  const [materiaId, setMateriaId] = useState("");
 
   useEffect(() => {
-    api.get("/materias").then(res => setMaterias(res.data));
-  }, []);
-
-  const criar = () => {
-    if (!titulo) {
-      setAlerta({
-        tipo: "danger",
-        mensagem: "Título é obrigatório"
-      });
-      return;
+    if (editingTask) {
+      setTitulo(editingTask.titulo || "");
+      setDescricao(editingTask.descricao || "");
+      setData(editingTask.data_entrega || "");
+      setMateriaId(editingTask.materia_id || "");
     }
+  }, [editingTask]);
 
-    api.post("/tarefas", {
-      titulo,
-      descricao,
-      data_entrega: data,
-      materia_id: materiaId
-    })
-      .then(() => {
-        setAlerta({
-          tipo: "success",
-          mensagem: "Tarefa criada com sucesso!"
-        });
-
-        setTitulo("");
-        setDescricao("");
-        setData("");
-        setMateriaId("");
-      })
-      .catch(() => {
-        setAlerta({
-          tipo: "danger",
-          mensagem: "Erro ao criar tarefa"
-        });
-      });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!titulo.trim()) return;
+    onSave({
+      titulo: titulo.trim(),
+      descricao: descricao.trim() || null,
+      data_entrega: data || null,
+      materia_id: materiaId || null,
+    });
   };
 
   return (
-    <div className="card mb-3">
-      <div className="card-body">
-        <h5>Nova Tarefa</h5>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-container" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>{editingTask ? "Editar Tarefa" : "Nova Tarefa"}</h2>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
 
-        <input
-          className="form-control mb-2"
-          placeholder="Título"
-          value={titulo}
-          onChange={e => setTitulo(e.target.value)}
-        />
+        <form onSubmit={handleSubmit}>
+          <div className="modal-body">
+            <div className="form-group">
+              <label className="form-label">Título *</label>
+              <input
+                className="form-input"
+                placeholder="Ex: Trabalho de Matemática"
+                value={titulo}
+                onChange={e => setTitulo(e.target.value)}
+                autoFocus
+              />
+            </div>
 
-        <input
-          type="date"
-          className="form-control mb-2"
-          value={data}
-          onChange={e => setData(e.target.value)}
-        />
+            <div className="form-group">
+              <label className="form-label">Descrição</label>
+              <textarea
+                className="form-textarea"
+                placeholder="Detalhes da tarefa..."
+                value={descricao}
+                onChange={e => setDescricao(e.target.value)}
+              />
+            </div>
 
-        <textarea
-          className="form-control mb-2"
-          placeholder="Descrição"
-          value={descricao}
-          onChange={e => setDescricao(e.target.value)}
-        />
+            <div className="form-group">
+              <label className="form-label">Data de Entrega</label>
+              <input
+                type="date"
+                className="form-input"
+                value={data}
+                onChange={e => setData(e.target.value)}
+              />
+            </div>
 
-        <select
-          className="form-control mb-2"
-          value={materiaId}
-          onChange={e => setMateriaId(e.target.value)}
-        >
-          <option value="">Selecione matéria</option>
-          {materias.map(m => (
-            <option key={m.id} value={m.id}>{m.nome}</option>
-          ))}
-        </select>
+            <div className="form-group">
+              <label className="form-label">Matéria</label>
+              <select
+                className="form-select"
+                value={materiaId}
+                onChange={e => setMateriaId(e.target.value)}
+              >
+                <option value="">Selecione uma matéria</option>
+                {materias.map(m => (
+                  <option key={m.id} value={m.id}>{m.nome}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-        <button className="btn btn-primary w-100" onClick={criar}>
-          Adicionar
-        </button>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn btn-primary">
+              {editingTask ? "Salvar Alterações" : "Criar Tarefa"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

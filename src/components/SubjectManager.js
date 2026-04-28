@@ -1,56 +1,63 @@
-import { useEffect, useState } from "react";
-import api from "../services/api";
+import { useState } from "react";
 
-function SubjectManager() {
+function SubjectManager({ onClose, materias, onAdd, onDelete }) {
   const [nome, setNome] = useState("");
-  const [materias, setMaterias] = useState([]);
 
-  const carregar = () => {
-    api.get("/materias").then(res => setMaterias(res.data));
-  };
-
-  useEffect(() => {
-    carregar();
-  }, []);
-
-  const criar = () => {
-    api.post("/materias", { nome }).then(() => {
-      setNome("");
-      carregar();
-    });
-  };
-
-  const deletar = (id) => {
-    api.delete(`/materias/${id}`).then(() => carregar());
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!nome.trim()) return;
+    onAdd(nome.trim());
+    setNome("");
   };
 
   return (
-    <div className="card mt-3">
-      <div className="card-body">
-        <h5>Matérias</h5>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-container" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Gerenciar Matérias</h2>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
 
-        <input
-          className="form-control mb-2"
-          placeholder="Nova matéria"
-          value={nome}
-          onChange={e => setNome(e.target.value)}
-        />
-
-        <button className="btn btn-dark w-100 mb-2" onClick={criar}>
-          Adicionar
-        </button>
-
-        {materias.map(m => (
-          <div key={m.id} className="d-flex justify-content-between mb-1">
-            <span>{m.nome}</span>
-            <button
-              className="btn btn-sm btn-danger"
-              onClick={() => deletar(m.id)}
-            >
-              X
+        <div className="modal-body">
+          <form onSubmit={handleSubmit} style={{ display: "flex", gap: "10px", marginBottom: "8px" }}>
+            <input
+              className="form-input"
+              placeholder="Nome da matéria"
+              value={nome}
+              onChange={e => setNome(e.target.value)}
+              autoFocus
+            />
+            <button type="submit" className="btn btn-primary" style={{ flexShrink: 0 }}>
+              Adicionar
             </button>
+          </form>
+
+          <div className="subject-list">
+            {materias.length === 0 && (
+              <p style={{ textAlign: "center", color: "var(--text-tertiary)", padding: "20px 0", fontSize: "0.85rem" }}>
+                Nenhuma matéria cadastrada
+              </p>
+            )}
+            {materias.map(m => (
+              <div key={m.id} className="subject-item">
+                <span className="subject-name">📘 {m.nome}</span>
+                <button
+                  className="subject-delete-btn"
+                  onClick={() => onDelete(m.id)}
+                  title="Remover matéria"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
   );
