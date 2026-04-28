@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaCalendar, FaTrash, FaPen } from "react-icons/fa";
+import { PiMailboxFill } from "react-icons/pi";
 
 function TaskList({ tarefas, hoje, onToggle, onEdit, onDelete, formatarData }) {
   const [openBimestres, setOpenBimestres] = useState({});
@@ -78,7 +79,7 @@ function TaskList({ tarefas, hoje, onToggle, onEdit, onDelete, formatarData }) {
     return (
       <div className="task-list">
         <div className="task-list-empty">
-          <div className="empty-icon">📭</div>
+          <div className="empty-icon"><PiMailboxFill /></div>
           <p>Nenhuma tarefa encontrada</p>
         </div>
       </div>
