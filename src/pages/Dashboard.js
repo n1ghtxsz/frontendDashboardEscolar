@@ -155,14 +155,20 @@ function Dashboard() {
           setNotificacoesAtivas(false);
           setAlerta({ tipo: "success", mensagem: "Notificações desativadas" });
         })
-        .catch(() => setAlerta({ tipo: "danger", mensagem: "Erro ao desativar notificações" }));
+        .catch(err => {
+          console.error("Erro ao desativar notificações:", err);
+          setAlerta({ tipo: "danger", mensagem: `Erro ao desativar notificações: ${err.message}` });
+        });
     } else {
       subscribeToPush()
         .then(() => {
           setNotificacoesAtivas(true);
           setAlerta({ tipo: "success", mensagem: "Notificações ativadas!" });
         })
-        .catch(() => setAlerta({ tipo: "danger", mensagem: "Erro ao ativar notificações" }));
+        .catch(err => {
+          console.error("Erro ao ativar notificações:", err);
+          setAlerta({ tipo: "danger", mensagem: `Erro ao ativar notificações: ${err.message}` });
+        });
     }
   };
 
