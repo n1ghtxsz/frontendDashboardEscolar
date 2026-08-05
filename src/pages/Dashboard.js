@@ -120,6 +120,15 @@ function Dashboard() {
       .catch(() => setAlerta({ tipo: "danger", mensagem: "Erro ao adicionar matéria" }));
   };
 
+  const handleEditMateria = (id, nome) => {
+    api.put(`/materias/${id}`, { nome })
+      .then(() => {
+        carregarMaterias();
+        setAlerta({ tipo: "success", mensagem: "Matéria atualizada!" });
+      })
+      .catch(() => setAlerta({ tipo: "danger", mensagem: "Erro ao atualizar matéria" }));
+  };
+
   const handleDeleteMateria = (id) => {
     api.delete(`/materias/${id}`)
       .then(() => {
@@ -306,6 +315,7 @@ function Dashboard() {
           onClose={() => setShowSubjectManager(false)}
           materias={materias}
           onAdd={handleAddMateria}
+          onEdit={handleEditMateria}
           onDelete={handleDeleteMateria}
         />
       )}

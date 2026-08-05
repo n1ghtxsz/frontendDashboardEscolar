@@ -1,15 +1,34 @@
 import { useState } from "react";
-import { FaBook, FaTrash } from "react-icons/fa";
+import { FaBook, FaTrash, FaPen, FaCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
-function SubjectManager({ onClose, materias, onAdd, onDelete }) {
+function SubjectManager({ onClose, materias, onAdd, onEdit, onDelete }) {
   const [nome, setNome] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [editNome, setEditNome] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!nome.trim()) return;
     onAdd(nome.trim());
     setNome("");
+  };
+
+  const startEdit = (m) => {
+    setEditingId(m.id);
+    setEditNome(m.nome);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditNome("");
+  };
+
+  const saveEdit = (id) => {
+    if (!editNome.trim()) return;
+    onEdit(id, editNome.trim());
+    setEditingId(null);
+    setEditNome("");
   };
 
   return (
@@ -42,14 +61,53 @@ function SubjectManager({ onClose, materias, onAdd, onDelete }) {
             )}
             {materias.map(m => (
               <div key={m.id} className="subject-item">
-                <span className="subject-name"><FaBook /> {m.nome}</span>
-                <button
-                  className="subject-delete-btn"
-                  onClick={() => onDelete(m.id)}
-                  title="Remover matéria"
-                >
-                  <FaTrash />
-                </button>
+                {editingId === m.id ? (
+                  <>
+                    <input
+                      className="form-input"
+                      value={editNome}
+                      onChange={e => setEditNome(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter") saveEdit(m.id);
+                        if (e.key === "Escape") cancelEdit();
+                      }}
+                      autoFocus
+                      style={{ flex: 1, marginRight: "8px" }}
+                    />
+                    <button
+                      className="subject-edit-btn"
+                      onClick={() => saveEdit(m.id)}
+                      title="Salvar"
+                    >
+                      <FaCheck />
+                    </button>
+                    <button
+                      className="subject-delete-btn"
+                      onClick={cancelEdit}
+                      title="Cancelar"
+                    >
+                      <IoClose />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="subject-name"><FaBook /> {m.nome}</span>
+                    <button
+                      className="subject-edit-btn"
+                      onClick={() => startEdit(m)}
+                      title="Editar matéria"
+                    >
+                      <FaPen />
+                    </button>
+                    <button
+                      className="subject-delete-btn"
+                      onClick={() => onDelete(m.id)}
+                      title="Remover matéria"
+                    >
+                      <FaTrash />
+                    </button>
+                  </>
+                )}
               </div>
             ))}
           </div>
