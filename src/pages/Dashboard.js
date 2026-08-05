@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { FaCalendar, FaList, FaSearch, FaBook, FaHourglassEnd, FaCheckSquare } from "react-icons/fa";
+import { FaCalendar, FaList, FaSearch, FaBook, FaHourglassEnd, FaCheckSquare, FaBell, FaBellSlash } from "react-icons/fa";
 import { IoIosWarning } from "react-icons/io";
 import { IoAddCircle } from "react-icons/io5";
 import { MdSpaceDashboard } from "react-icons/md";
@@ -9,6 +9,7 @@ import Alert from "../components/Alert";
 import SubjectManager from "../components/SubjectManager";
 import History from "../components/History";
 import api from "../services/api";
+import { registerServiceWorker, getPushSubscription, subscribeToPush, unsubscribeFromPush, pushSuportado } from "../services/push";
 import "../styles/Dashboard.css";
 
 function Dashboard() {
@@ -23,6 +24,7 @@ function Dashboard() {
   const [filterMateria, setFilterMateria] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [alerta, setAlerta] = useState({ tipo: "", mensagem: "" });
+  const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
 
   const carregarTarefas = useCallback(() => {
     api.get("/tarefas").then(res => setTarefas(res.data || []));
@@ -36,6 +38,14 @@ function Dashboard() {
     carregarTarefas();
     carregarMaterias();
   }, [carregarTarefas, carregarMaterias]);
+
+  useEffect(() => {
+    if (!pushSuportado()) return;
+    registerServiceWorker()
+      .then(() => getPushSubscription())
+      .then(sub => setNotificacoesAtivas(!!sub))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (alerta.mensagem) {
@@ -138,6 +148,24 @@ function Dashboard() {
       .catch(() => setAlerta({ tipo: "danger", mensagem: "Erro ao remover matéria" }));
   };
 
+  const handleToggleNotificacoes = () => {
+    if (notificacoesAtivas) {
+      unsubscribeFromPush()
+        .then(() => {
+          setNotificacoesAtivas(false);
+          setAlerta({ tipo: "success", mensagem: "Notificações desativadas" });
+        })
+        .catch(() => setAlerta({ tipo: "danger", mensagem: "Erro ao desativar notificações" }));
+    } else {
+      subscribeToPush()
+        .then(() => {
+          setNotificacoesAtivas(true);
+          setAlerta({ tipo: "success", mensagem: "Notificações ativadas!" });
+        })
+        .catch(() => setAlerta({ tipo: "danger", mensagem: "Erro ao ativar notificações" }));
+    }
+  };
+
   const formatarData = (data) => {
     if (!data) return "Sem data";
     const [ano, mes, dia] = data.split("-");
@@ -220,6 +248,15 @@ function Dashboard() {
                 onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
+          )}
+          {pushSuportado() && (
+            <button
+              className="bell-btn"
+              onClick={handleToggleNotificacoes}
+              title={notificacoesAtivas ? "Desativar notificações" : "Ativar notificações"}
+            >
+              {notificacoesAtivas ? <FaBell /> : <FaBellSlash />}
+            </button>
           )}
         </header>
 
